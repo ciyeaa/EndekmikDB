@@ -29,10 +29,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        checkDataAndSync();
-    }
-
-    private void checkDataAndSync() {
         AppDatabase db = AppDatabase.getInstance(this);
         Executors.newSingleThreadExecutor().execute(() -> {
             int count = db.endemikDao().getEndemikCount();
@@ -51,8 +47,7 @@ public class SplashActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     saveDataToRoom(response.body());
                 } else {
-                    Toast.makeText(SplashActivity.this, "Gagal mengambil data dari API", Toast.LENGTH_SHORT).show();
-                    // Optional: Load fallback local data
+                    Toast.makeText(SplashActivity.this, "Gagal sinkronisasi data", Toast.LENGTH_SHORT).show();
                     goToHome();
                 }
             }
@@ -60,7 +55,6 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<List<Endemik>> call, @NonNull Throwable t) {
                 Log.e("SplashActivity", "Error: " + t.getMessage());
-                Toast.makeText(SplashActivity.this, "Koneksi Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 goToHome();
             }
         });
@@ -69,10 +63,7 @@ public class SplashActivity extends AppCompatActivity {
     private void saveDataToRoom(List<Endemik> data) {
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase.getInstance(this).endemikDao().insertAll(data);
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Data Berhasil Disinkronkan", Toast.LENGTH_SHORT).show();
-                goToHome();
-            });
+            runOnUiThread(this::goToHome);
         });
     }
 
