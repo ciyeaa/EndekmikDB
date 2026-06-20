@@ -85,6 +85,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@drawable/ic_heart"
+        android:elevation="8dp"
+        app:pressedTranslationZ="12dp"
         app:layout_anchor="@id/detail_image"
         app:layout_anchorGravity="bottom|end" />
 

@@ -23,7 +23,6 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // MENGAMBIL DATA ASLI DARI INTENT
         endemik = (Endemik) getIntent().getSerializableExtra("endemik");
         
         if (endemik == null) {
@@ -59,8 +58,15 @@ public class DetailActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(EndemikViewModel.class);
         
         fabFavorit.setOnClickListener(v -> {
-            viewModel.toggleFavorit(endemik);
-            Toast.makeText(this, "Berhasil diperbarui di Favorit", Toast.LENGTH_SHORT).show();
+            viewModel.toggleFavorit(endemik, isAdded -> {
+                runOnUiThread(() -> {
+                    if (isAdded) {
+                        Toast.makeText(this, "Ditambahkan ke Favorit", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Dihapus dari Favorit", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
         });
     }
 }

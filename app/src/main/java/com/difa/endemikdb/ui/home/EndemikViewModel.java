@@ -34,7 +34,7 @@ public class EndemikViewModel extends AndroidViewModel {
         return dao.getAllFavorit();
     }
 
-    public void toggleFavorit(Endemik e) {
+    public void toggleFavorit(Endemik e, FavoritCallback callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
             Favorit existing = dao.getFavoritById(e.getId());
             if (existing == null) {
@@ -51,10 +51,16 @@ public class EndemikViewModel extends AndroidViewModel {
                 f.setDistribution(e.getDistribution());
                 f.setStatus(e.getStatus());
                 dao.insertFavorit(f);
+                if (callback != null) callback.onResult(true);
             } else {
                 dao.deleteFavoritById(e.getId());
+                if (callback != null) callback.onResult(false);
             }
         });
+    }
+
+    public interface FavoritCallback {
+        void onResult(boolean isAdded);
     }
 
     public LiveData<List<Endemik>> searchEndemik(String query) {
